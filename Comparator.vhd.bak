@@ -1,0 +1,39 @@
+library IEEE;
+use IEEE.std_logic_1164.all;
+
+entity MagnitudeComparator is
+	port (
+		A	: in std_logic_vector(3 downto 0);
+		B	: in std_logic_vector(3 downto 0);
+		A_less_B		: out std_logic; -- '1' if A is less than B '0', otherwise
+		A_equals_B	: out std_logic; -- '1' if A equals B '0', otherwise
+		A_greater_B	: out std_logic -- '1' if A is greater than B '0', otherwise
+	);
+end MagnitudeComparator;
+
+architecture comparator_structure of MagnitudeComparator is
+	-- auxiliary signals
+	signal aux1, aux2, aux3, aux4 : std_logic; -- LESS
+	signal aux5, aux6, aux7, aux8 : std_logic; -- EQUALS
+	signal aux9, aux10, aux11, aux12 : std_logic; -- GREATER
+	
+	begin
+		-- A LESS THAN B
+		aux9 <= (not A(3)) and B(3);
+		aux10 <= (A(3) xnor B(3)) and (not A(2)) and B(2);
+		aux11 <= (A(3) xnor B(3)) and (A(2) xnor B(2)) and (not A(1)) and B(1);
+		aux12 <= (A(3) xnor B(3)) and (A(2) xnor B(2)) and (A(1) xnor B(1)) and (not A(0)) and B(0);
+		A_less_B <= aux9 or aux10 or aux11 or aux12;
+		-- A EQUALS B
+		aux5 <= A(3) xnor B(3);
+		aux6 <= A(2) xnor B(2);
+		aux7 <= A(1) xnor B(1);
+		aux8 <= A(0) xnor B(0);
+		A_equals_B <= aux5 and aux6 and aux7 and aux8;
+		-- A GREATER THAN B
+		aux1 <= A(3) and (not B(3));
+		aux2 <= (A(3) xnor B(3)) and A(2) and (not B(2));
+		aux3 <= (A(3) xnor B(3)) and (A(2) xnor B(2)) and A(1) and (not B(1));
+		aux4 <= (A(3) xnor B(3)) and (A(2) xnor B(2)) and (A(1) xnor B(1)) and A(0) and (not B(0));
+		A_greater_B <= aux1 or aux2 or aux3 or aux4;
+end comparator_structure;
